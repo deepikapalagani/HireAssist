@@ -1,19 +1,14 @@
 # Resume Screening LLM Fine-tuning
 
-This project fine-tunes an LLM (Qwen2.5-1.5B-Instruct) to evaluate candidate resumes against job descriptions and make hiring decisions (Select/Reject) with reasons.
-
 ## Project Structure
 
-- `preprocess_data.py`: Script to load, clean (PII removal, deduplication), format, and split the dataset.
-- `train.py`: Script to fine-tune the model using LoRA and `trl`.
-- `inference.py`: Script to run inference with the fine-tuned model.
-- `processed_data/`: Directory containing the processed train/val/test datasets (CSV and JSONL).
+- `preprocess_data.py`: Script to load, clean (PII removal), and split the dataset.
 
 ## Setup
 
 1.  **Install Dependencies**:
     ```bash
-    pip install torch transformers peft trl accelerate datasets pandas scikit-learn
+    pip install -r requirements.txt
     ```
 
 2.  **Data Preprocessing**:
@@ -28,4 +23,3 @@ This project fine-tunes an LLM (Qwen2.5-1.5B-Instruct) to evaluate candidate res
     **Preprocessing Features:**
     - **PII Removal**: Removes Emails, Phone numbers, URLs using Regex
     - **Stratified Split**: Ensures balanced 'Decision' classes across splits
-
