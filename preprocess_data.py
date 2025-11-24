@@ -24,24 +24,6 @@ def remove_pii(text):
     
     return text
 
-def format_prompt(example):
-    """
-    Formats the input example into a prompt for the LLM.
-    """
-    prompt = f"""### Instruction:
-You are a hiring manager. Evaluate the following candidate for the role of {example['Role']}.
-
-### Job Description:
-{example['Job_Description']}
-
-### Candidate Resume:
-{example['Resume']}
-
-### Decision:
-{example['Decision']} - {example['Reason_for_decision']}"""
-    
-    return {"text": prompt}
-
 def main():
     print("Loading dataset...")
     # Load the dataset
@@ -66,10 +48,6 @@ def main():
     # 2. PII Removal
     print("Removing PII from Resumes...")
     df['Resume'] = df['Resume'].apply(remove_pii)
-
-    # Apply formatting
-    # print("Formatting prompts...")
-    # df['text'] = df.apply(format_prompt, axis=1).apply(lambda x: x['text'])
 
     # Stratified Split
     # 80% Train, 10% Validation, 10% Test
