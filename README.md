@@ -4,10 +4,7 @@ This project fine-tunes an LLM (Qwen2.5-1.5B-Instruct) to evaluate candidate res
 
 ## Project Structure
 
-- `preprocess_data.py`: Script to load, clean (PII removal, deduplication), format, and split the dataset.
-- `train.py`: Script to fine-tune the model using LoRA and `trl`.
-- `inference.py`: Script to run inference with the fine-tuned model.
-- `processed_data/`: Directory containing the processed train/val/test datasets (CSV and JSONL).
+- `preprocess_data.py`: Script to load, clean (PII removal), and split the dataset.
 
 ## Setup
 
