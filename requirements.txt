@@ -1,0 +1,11 @@
+pandas
+transformers
+accelerate
+datasets
+scikit-learn    
+peft
+trl     
+torch
+nltk
+regex
+numpy
