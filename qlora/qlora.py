@@ -105,6 +105,7 @@ def run_qlora_finetuning():
         warmup_ratio=WARMUP_RATIO,
         lr_scheduler_type="cosine",
         optim="paged_adamw_8bit", # Optimized AdamW for QLoRA
+        gradient_checkpointing=True, # Essential for memory savings
     )
 
     # Data Collator (standard language modeling collator for next-token prediction)

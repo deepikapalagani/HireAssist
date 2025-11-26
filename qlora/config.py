@@ -29,10 +29,10 @@ LORA_ALPHA = 64      # Alpha = 2 * R is a common heuristic
 LORA_DROPOUT = 0.05  # Reduced dropout slightly for stability
 
 # Training Parameters
-PER_DEVICE_TRAIN_BATCH_SIZE = 4
-GRADIENT_ACCUMULATION_STEPS = 4 # Effective batch size = 16
+PER_DEVICE_TRAIN_BATCH_SIZE = 1  # Reduced to 1 for minimum VRAM usage
+GRADIENT_ACCUMULATION_STEPS = 16 # Increased to maintain effective batch size of 16
 LEARNING_RATE = 2e-4
-MAX_SEQ_LENGTH = 512
+MAX_SEQ_LENGTH = 512 # Keep short for memory efficiency
 NUM_TRAIN_EPOCHS = 3
 SAVE_STEPS = 100
 LOGGING_STEPS = 10
