@@ -3,18 +3,30 @@ import torch
 TEST_MODE = True
 # --- 1. Configuration ---
 
+MODEL_FAMILY = "mistral" # Options: "llama3", "mistral"
+
 # Model and Tokenizer Setup
-MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
-OUTPUT_DIR = "./llama3_qlora_output"
-BOS_TOKEN = "<|begin_of_text|>"
-EOS_TOKEN = "<|eot_id|>"
-PAD_TOKEN = "<|padding|>" # Or use EOT/BOS if the tokenizer is configured to do so
+if MODEL_FAMILY == "llama3":
+    MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
+    BOS_TOKEN = "<|begin_of_text|>"
+    EOS_TOKEN = "<|eot_id|>"
+    PAD_TOKEN = "<|padding|>" 
+    TARGET_MODULES = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+elif MODEL_FAMILY == "mistral":
+    MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.3"
+    BOS_TOKEN = "<s>"
+    EOS_TOKEN = "</s>"
+    PAD_TOKEN = "<unk>" # Mistral often uses unk as pad if not specified, or we can add one.
+    TARGET_MODULES = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+else:
+    raise ValueError(f"Unknown MODEL_FAMILY: {MODEL_FAMILY}")
+
+OUTPUT_DIR = f"./{MODEL_FAMILY}_qlora_output"
 
 # QLoRA/PEFT Parameters
-LORA_R = 16          # LoRA attention dimension
-LORA_ALPHA = 16      # Alpha parameter for LoRA scaling
-LORA_DROPOUT = 0.1   # Dropout probability for LoRA layers
-TARGET_MODULES = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"] #TODO: verify 
+LORA_R = 32          # Increased to 32 for better reasoning capabilities
+LORA_ALPHA = 64      # Alpha = 2 * R is a common heuristic
+LORA_DROPOUT = 0.05  # Reduced dropout slightly for stability
 
 # Training Parameters
 PER_DEVICE_TRAIN_BATCH_SIZE = 4

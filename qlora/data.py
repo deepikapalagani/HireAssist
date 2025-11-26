@@ -2,10 +2,9 @@ import json
 import pandas as pd
 from datasets import load_dataset, Dataset
 
-BOS_TOKEN = "<|begin_of_text|>"
-EOS_TOKEN = "<|eot_id|>"
+from config import BOS_TOKEN, EOS_TOKEN
 
-def load_and_format(filepath, n = None):
+def load_and_format(filepath, model_family="llama3", n = None):
 
     # Load JSONL data into a DataFrame
     lines = [json.loads(l) for l in open(filepath, encoding="utf-8")]
@@ -22,12 +21,21 @@ def load_and_format(filepath, n = None):
 
     output_template = lambda row:f"{row['Decision']}: {row['Reason_for_decision']}"
 
-    final_template = lambda input, output: (
-        f"{BOS_TOKEN}<|start_header_id|>user<|end_header_id|>\n"
-        f"{input}{EOS_TOKEN}\n"  # EOS token closes the user message
-        f"<|start_header_id|>assistant<|end_header_id|>\n"
-        f"{output}{EOS_TOKEN}" # Final EOS token closes the entire sequence
-    )
+    final_template = None
+    if model_family == "llama3":
+        final_template = lambda input, output: (
+            f"{BOS_TOKEN}<|start_header_id|>user<|end_header_id|>\n"
+            f"{input}{EOS_TOKEN}\n"  # EOS token closes the user message
+            f"<|start_header_id|>assistant<|end_header_id|>\n"
+            f"{output}{EOS_TOKEN}" # Final EOS token closes the entire sequence
+        )
+    elif model_family == "mistral":
+        # Mistral Instruct Template: <s>[INST] {user} [/INST] {assistant}</s>
+        final_template = lambda input, output: (
+            f"{BOS_TOKEN}[INST] {input} [/INST] {output}{EOS_TOKEN}"
+        )
+    else:
+        raise ValueError(f"Unknown model_family: {model_family}")
 
     # Build the dataset
     data = []

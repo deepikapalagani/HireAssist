@@ -60,7 +60,7 @@ def run_qlora_finetuning():
     print("--- 2. Preparing Dataset and Tokenization ---")
     
     # Create / Load Dataset (Using mock data here)
-    raw_dataset = load_and_format(filepath="./processed_data/train.jsonl", n=5 if TEST_MODE else None)
+    raw_dataset = load_and_format(filepath="./processed_data/train.jsonl", model_family=MODEL_FAMILY, n=5 if TEST_MODE else None)
 
     def tokenize_function(examples):
         return tokenizer(examples["text"], truncation=True, max_length=MAX_SEQ_LENGTH)
