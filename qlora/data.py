@@ -1,0 +1,48 @@
+import json
+import pandas as pd
+from datasets import load_dataset, Dataset
+
+BOS_TOKEN = "<|begin_of_text|>"
+EOS_TOKEN = "<|eot_id|>"
+
+def load_and_format(filepath, n = None):
+
+    # Load JSONL data into a DataFrame
+    lines = [json.loads(l) for l in open(filepath, encoding="utf-8")]
+    df = pd.json_normalize(lines)
+
+    # Define templates for input and output
+    input_template = lambda row: (
+        f"You are a Senior Recruiter. Evaluate the candidate below based on the following job requirements. "
+        f"Output a single classification ('SELECT' or 'REJECT') followed by a detailed reason for the decision.\n\n"
+        f"--- JOB ROLE ---\n{row['Role']}\n\n"
+        f"--- JOB DESCRIPTION ---\n{row['Job_Description']}\n\n"
+        f"--- CANDIDATE RESUME ---\n{row['Resume']}\n"
+    )
+
+    output_template = lambda row:f"{row['Decision']}: {row['Reason_for_decision']}"
+
+    final_template = lambda input, output: (
+        f"{BOS_TOKEN}<|start_header_id|>user<|end_header_id|>\n"
+        f"{input}{EOS_TOKEN}\n"  # EOS token closes the user message
+        f"<|start_header_id|>assistant<|end_header_id|>\n"
+        f"{output}{EOS_TOKEN}" # Final EOS token closes the entire sequence
+    )
+
+    # Build the dataset
+    data = []
+    for _, row in df.iterrows():
+        input_ = input_template(row)
+        output_ = output_template(row)
+
+        final_text = final_template(input_, output_)
+        data.append({"text": final_text})
+
+    print("Loaded", len(data), "examples from", filepath)
+    dataset = Dataset.from_list(data)
+    
+    if n is not None:
+        print("--- WARNING: Limiting dataset to", n, "examples for testing ---")
+        dataset = dataset.select(range(min(n, len(dataset))))
+
+    return dataset
