@@ -10,3 +10,4 @@ nltk
 regex
 numpy
 bitsandbytes
+flash-attn --no-build-isolation

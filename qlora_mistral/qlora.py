@@ -48,6 +48,7 @@ def run_qlora_finetuning():
         device_map="auto", # Automatically distributes the model across available GPUs
         torch_dtype=torch.bfloat16 if BF16 else torch.float16,
         use_auth_token=True,
+        attn_implementation="flash_attention_2"
     )
     
     # 3. Resize embeddings if PAD token was added
