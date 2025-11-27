@@ -5,8 +5,7 @@ import re
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score, classification_report
 from bert_score import score
-import mlx.core as mx
-from mlx_lm import load, generate
+from vllm import LLM, SamplingParams
 
 # --- Instructions ---
 
@@ -111,9 +110,9 @@ def parse_output(response):
     
     # Extract Decision
     decision = "Unknown"
-    if "decision: select" in response_lower or "decision: \"select\"" in response_lower:
+    if "decision: select" in response_lower:
         decision = "Select"
-    elif "decision: reject" in response_lower or "decision: \"reject\"" in response_lower:
+    elif "decision: reject" in response_lower:
         decision = "Reject"
     else:
         # Fallback
@@ -140,20 +139,37 @@ def parse_output(response):
     return decision, reasoning
 
 def main():
-    parser = argparse.ArgumentParser(description="Run ICL Inference on Mac (MLX)")
-    parser.add_argument("--model_name", type=str, required=True, help="MLX Model name or path (e.g., mlx-community/Meta-Llama-3-8B-Instruct-4bit)")
+    parser = argparse.ArgumentParser(description="Run ICL Inference with vLLM")
+    parser.add_argument("--model_name", type=str, required=True, help="Model name or path")
     parser.add_argument("--data_path", type=str, default="../processed_data/validation.jsonl", help="Path to data JSONL file")
     parser.add_argument("--output_file", type=str, default="results.json", help="Path to save results")
     parser.add_argument("--max_samples", type=int, default=None, help="Limit number of samples for testing")
     parser.add_argument("--prompt_style", type=str, choices=["zero_shot", "two_shot_standard", "two_shot_detailed"], default="zero_shot", help="Prompting strategy")
-    parser.add_argument("--debug", action="store_true", help="Enable debug logging of raw model outputs")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("--quantization", type=str, default=None, help="Quantization method (e.g., bitsandbytes, awq)")
+    parser.add_argument("--gpu_memory_utilization", type=float, default=0.9, help="Fraction of GPU memory to use")
+    parser.add_argument("--enforce_eager", action="store_true", help="Disable CUDA graphs to save memory")
     args = parser.parse_args()
 
-    print(f"Loading model: {args.model_name}")
+    print(f"Loading model: {args.model_name} with vLLM")
     print(f"Prompt Style: {args.prompt_style}")
     
     try:
-        model, tokenizer = load(args.model_name)
+        # Initialize vLLM
+        llm = LLM(
+            model=args.model_name,
+            quantization=args.quantization,
+            trust_remote_code=True,
+            dtype="half" if args.quantization is None else "auto",
+            gpu_memory_utilization=args.gpu_memory_utilization,
+            enforce_eager=args.enforce_eager
+        )
+        
+        sampling_params = SamplingParams(
+            temperature=0.1,
+            max_tokens=256,
+            stop=["<|eot_id|>", "</s>"] # Stop tokens for Llama/Mistral
+        )
     except Exception as e:
         print(f"Error loading model: {e}")
         return
@@ -168,36 +184,43 @@ def main():
         data = data[:args.max_samples]
     print(f"Running on {len(data)} samples")
 
+    # Prepare prompts
+    prompts = []
+    for item in data:
+        job_desc = item.get('Job_Description', '')
+        resume = item.get('Resume', '')
+        prompt = get_prompt(args.model_name, job_desc, resume, args.prompt_style)
+        prompts.append(prompt)
+
+    print("Starting inference...")
+    
+    # Generate
+    outputs = llm.generate(prompts, sampling_params)
+    
     results = []
     true_labels = []
     pred_labels = []
     true_reasonings = []
     pred_reasonings = []
-
-    print("Starting inference...")
     
     # Create log file path
     log_file = args.output_file.replace(".json", "_log.txt")
     with open(log_file, "w") as f:
-        f.write(f"Intermediate Metrics for {args.model_name} ({args.prompt_style})\n")
+        f.write(f"Intermediate Metrics for {args.model_name} ({args.prompt_style}) [vLLM]\n")
         f.write("================================================\n")
 
-    for i, item in enumerate(tqdm(data)):
-        job_desc = item.get('Job_Description', '')
-        resume = item.get('Resume', '')
-        true_label = item.get('Decision', '').capitalize() # Normalize to Select/Reject
+    for i, output in enumerate(outputs):
+        generated_text = output.outputs[0].text
+        item = data[i]
+        
+        true_label = item.get('Decision', '').capitalize()
         true_reason = item.get('Reason_for_decision', '')
         
-        prompt = get_prompt(args.model_name, job_desc, resume, args.prompt_style)
-        
-        # MLX Generation
-        response = generate(model, tokenizer, prompt=prompt, max_tokens=256, verbose=False)
-        
-        decision, reasoning = parse_output(response)
+        decision, reasoning = parse_output(generated_text)
         
         results.append({
-            "prompt": prompt,
-            "generated_text": response,
+            "prompt": prompts[i],
+            "generated_text": generated_text,
             "true_label": true_label,
             "predicted_label": decision,
             "true_reasoning": true_reason,
@@ -208,28 +231,14 @@ def main():
         pred_labels.append(decision)
         true_reasonings.append(true_reason)
         pred_reasonings.append(reasoning)
-
-        # Log metrics every 50 samples
-        if (i + 1) % 50 == 0:
-            current_acc = accuracy_score(true_labels, pred_labels)
-            try:
-                P, R, F1 = score(pred_reasonings, true_reasonings, lang="en", verbose=False)
-                current_bert = F1.mean().item()
-            except Exception:
-                current_bert = 0.0
-            
-            log_msg = f"Sample {i+1}: Accuracy={current_acc:.4f}, BERTScore={current_bert:.4f}\n"
-            print(f"\n{log_msg.strip()}")
-            with open(log_file, "a") as f:
-                f.write(log_msg)
-
-        # DEBUG: Log generated text for the first 5 samples and then every 50th to debug parsing
+        
+        # Debug logging
         if args.debug and (i < 5 or (i + 1) % 50 == 0):
             with open(log_file, "a") as f:
                 f.write(f"\n[DEBUG Sample {i+1}]\n")
                 f.write(f"True: {true_label}\n")
                 f.write(f"Pred: {decision}\n")
-                f.write(f"Raw Output: {response.strip()}\n")
+                f.write(f"Raw Output: {generated_text.strip()}\n")
                 f.write("-" * 30 + "\n")
 
     # Metrics
@@ -253,7 +262,8 @@ def main():
         "config": {
             "model": args.model_name,
             "prompt_style": args.prompt_style,
-            "samples": len(data)
+            "samples": len(data),
+            "backend": "vllm"
         },
         "metrics": {
             "accuracy": accuracy,

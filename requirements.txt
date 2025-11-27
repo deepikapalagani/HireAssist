@@ -10,3 +10,5 @@ nltk
 regex
 numpy
 bert_score
+protobuf
+sentencepiece

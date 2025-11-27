@@ -20,18 +20,18 @@ bnb_config = BitsAndBytesConfig(
 # --- Instructions ---
 
 INSTRUCTION_STANDARD = (
-    "You are an AI Hiring assistant. Analyze the job description and evaluate if the provided resume is a good fit. "
-    "Provide exactly one sentence of reasoning, followed by a final decision of either [Select] or [Reject]. "
+    "You are an HR recruiter. Analyze the job description and evaluate if the provided resume is a good fit. "
+    "Provide exactly one sentence of reasoning, followed by a final decision of either [select] or [reject]. "
     "Strictly follow the target format.\n\n"
 )
 
 INSTRUCTION_DETAILED = (
-    "You are an expert AI Talent Acquisition Specialist. Your task is to rigorously evaluate a candidate's resume against a specific job description.\n"
+    "You are an expert HR recruiter. Your task is to rigorously evaluate a candidate's resume against a specific job description.\n"
     "1. Analyze the Job Description to identify key technical skills, required experience years, and core responsibilities.\n"
     "2. Analyze the Resume to find evidence of these specific skills and experience.\n"
     "3. Compare the two. Look for gaps in years of experience or missing critical skills.\n"
     "4. Provide a single sentence reasoning justifying your decision based on this comparison.\n"
-    "5. Conclude with a final decision: [Select] or [Reject].\n"
+    "5. Conclude with a final decision: [select] or [reject].\n"
     "Strictly follow the target format.\n\n"
 )
 
@@ -162,10 +162,13 @@ def main():
     parser.add_argument("--output_file", type=str, default="results.json", help="Path to save results")
     parser.add_argument("--max_samples", type=int, default=None, help="Limit number of samples for testing")
     parser.add_argument("--prompt_style", type=str, choices=["zero_shot", "two_shot_standard", "two_shot_detailed"], default="zero_shot", help="Prompting strategy")
+    parser.add_argument("--batch_size", type=int, default=8, help="Batch size for inference")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging of raw model outputs")
     args = parser.parse_args()
 
     print(f"Loading model: {args.model_name}")
     print(f"Prompt Style: {args.prompt_style}")
+    print(f"Batch Size: {args.batch_size}")
     
     try:
         tokenizer = AutoTokenizer.from_pretrained(args.model_name)
@@ -181,6 +184,9 @@ def main():
 
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+    
+    # Set padding side to left for decoder-only architecture
+    tokenizer.padding_side = "left"
 
     print(f"Loading data from {args.data_path}")
     data = []
@@ -199,15 +205,28 @@ def main():
     pred_reasonings = []
 
     print("Starting inference...")
-    for item in tqdm(data):
-        job_desc = item.get('Job_Description', '')
-        resume = item.get('Resume', '')
-        true_label = item.get('Decision', '')
-        true_reason = item.get('Reason_for_decision', '')
+    
+    # Create log file path
+    log_file = args.output_file.replace(".json", "_log.txt")
+    with open(log_file, "w") as f:
+        f.write(f"Intermediate Metrics for {args.model_name} ({args.prompt_style})\n")
+        f.write("================================================\n")
+
+    # Process in batches
+    for i in tqdm(range(0, len(data), args.batch_size)):
+        batch_data = data[i : i + args.batch_size]
+        batch_prompts = []
+        batch_indices = range(i, i + len(batch_data))
         
-        prompt = get_prompt(args.model_name, job_desc, resume, args.prompt_style)
+        # Prepare prompts
+        for item in batch_data:
+            job_desc = item.get('Job_Description', '')
+            resume = item.get('Resume', '')
+            prompt = get_prompt(args.model_name, job_desc, resume, args.prompt_style)
+            batch_prompts.append(prompt)
         
-        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+        # Tokenize batch
+        inputs = tokenizer(batch_prompts, return_tensors="pt", padding=True, truncation=True).to(model.device)
         
         with torch.no_grad():
             outputs = model.generate(
@@ -218,28 +237,60 @@ def main():
                 pad_token_id=tokenizer.pad_token_id
             )
         
-        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        # Decode and process results
+        # outputs includes prompt + generated text. We need to slice off the prompt tokens if we want just the new text, 
+        # but tokenizer.decode with skip_special_tokens usually handles it well enough if we parse carefully.
+        # Better: decode only the new tokens.
+        input_len = inputs.input_ids.shape[1]
+        generated_tokens = outputs[:, input_len:]
+        decoded_responses = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
         
-        # Strip prompt from generated text if model echoes it (common in some setups, though skip_special_tokens helps)
-        # For Llama-3 instruct, usually it generates only response, but let's be safe.
-        # Simple heuristic: if prompt is in generated_text, split it.
-        # Actually, let's just parse the whole thing, our parser looks for "Decision:"
-        
-        decision, reasoning = parse_output(generated_text)
-        
-        results.append({
-            "prompt": prompt,
-            "generated_text": generated_text,
-            "true_label": true_label,
-            "predicted_label": decision,
-            "true_reasoning": true_reason,
-            "predicted_reasoning": reasoning
-        })
-        
-        true_labels.append(true_label)
-        pred_labels.append(decision)
-        true_reasonings.append(true_reason)
-        pred_reasonings.append(reasoning)
+        for j, response in enumerate(decoded_responses):
+            item = batch_data[j]
+            global_idx = batch_indices[j]
+            
+            true_label = item.get('Decision', '').capitalize()
+            true_reason = item.get('Reason_for_decision', '')
+            
+            decision, reasoning = parse_output(response)
+            
+            results.append({
+                "prompt": batch_prompts[j],
+                "generated_text": response,
+                "true_label": true_label,
+                "predicted_label": decision,
+                "true_reasoning": true_reason,
+                "predicted_reasoning": reasoning
+            })
+            
+            true_labels.append(true_label)
+            pred_labels.append(decision)
+            true_reasonings.append(true_reason)
+            pred_reasonings.append(reasoning)
+
+            # Debug logging (check if global index matches criteria)
+            if args.debug and (global_idx < 5 or (global_idx + 1) % 50 == 0):
+                with open(log_file, "a") as f:
+                    f.write(f"\n[DEBUG Sample {global_idx+1}]\n")
+                    f.write(f"True: {true_label}\n")
+                    f.write(f"Pred: {decision}\n")
+                    f.write(f"Raw Output: {response.strip()}\n")
+                    f.write("-" * 30 + "\n")
+
+        # Log metrics every 50 samples (approximate, based on batch end)
+        if (i + len(batch_data)) % 50 < args.batch_size and (i + len(batch_data)) >= 50:
+             # Calculate metrics on all data so far
+            current_acc = accuracy_score(true_labels, pred_labels)
+            try:
+                P, R, F1 = score(pred_reasonings, true_reasonings, lang="en", verbose=False)
+                current_bert = F1.mean().item()
+            except Exception:
+                current_bert = 0.0
+            
+            log_msg = f"Sample {i + len(batch_data)}: Accuracy={current_acc:.4f}, BERTScore={current_bert:.4f}\n"
+            print(f"\n{log_msg.strip()}")
+            with open(log_file, "a") as f:
+                f.write(log_msg)
 
     # Metrics
     accuracy = accuracy_score(true_labels, pred_labels)
