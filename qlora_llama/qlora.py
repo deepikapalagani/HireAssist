@@ -141,7 +141,7 @@ def run_qlora_finetuning():
         train_dataset=tokenized_train_dataset,
         eval_dataset=tokenized_validation_dataset,
         data_collator=data_collator,
-        callbacks=[EvaluationCallback(tokenized_validation_dataset, tokenizer, num_samples=5 if TEST_MODE else 20)]
+        callbacks=[EvaluationCallback(validation_dataset, tokenizer, num_samples=5 if TEST_MODE else 20)]
     )
 
     trainer.train()

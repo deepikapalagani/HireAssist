@@ -1,11 +1,11 @@
 import torch
 
-TEST_MODE = False
+TEST_MODE = True
 print("TEST MODE: ", TEST_MODE)
 # --- 1. Configuration ---
 
 MODEL_FAMILY = "llama3" # Options: "llama3", "mistral"
-USE_FLASH_ATTENTION = True
+USE_FLASH_ATTENTION = False
 
 # Model and Tokenizer Setup
 if MODEL_FAMILY == "llama3":
