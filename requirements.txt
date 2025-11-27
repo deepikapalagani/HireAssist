@@ -10,3 +10,5 @@ nltk
 regex
 numpy
 bitsandbytes
+evaluate
+bert_score
