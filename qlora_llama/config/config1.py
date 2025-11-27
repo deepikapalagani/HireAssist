@@ -1,6 +1,6 @@
 import torch
 
-TEST_MODE = True
+TEST_MODE = False
 print("TEST MODE: ", TEST_MODE)
 # --- 1. Configuration ---
 

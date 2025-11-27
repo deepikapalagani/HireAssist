@@ -26,7 +26,7 @@ def run_qlora_finetuning():
     print(f"--- 1. Loading Model and Tokenizer: {MODEL_NAME} ---")
 
     # Load Tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_auth_token=True)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_auth_token=True, add_bos_token=False)
     
     # Crucially, add a padding token if the tokenizer doesn't have one (Llama 3 doesn't by default)
     # The default Llama 3 tokenizer only has BOS and EOS (eot_id).
