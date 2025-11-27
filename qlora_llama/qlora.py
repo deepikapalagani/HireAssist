@@ -9,14 +9,14 @@ from transformers import (
     Trainer,
     DataCollatorForLanguageModeling
 )
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from datasets import load_dataset, Dataset
 
 # To import data and config
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from data import load_and_format
-from qlora_llama.cfg.config1 import *
+from config.config1 import *
 from metrics import EvaluationCallback
 
 # --- Main Execution ---
@@ -49,14 +49,18 @@ def run_qlora_finetuning():
         device_map="auto", # Automatically distributes the model across available GPUs
         torch_dtype=torch.bfloat16 if BF16 else torch.float16,
         use_auth_token=True,
+        attn_implementation="flash_attention_2" if USE_FLASH_ATTENTION else "eager",
     )
-    
+    print(f"Using attention implementation: {USE_FLASH_ATTENTION}")
     # 3. Resize embeddings if PAD token was added
     model.resize_token_embeddings(len(tokenizer))
     
     # 4. Freeze all parameters (4-bit weights are already non-trainable)
     model.config.use_cache = False # Required for gradient checkpointing
     model.config.pretraining_tp = 1 # Recommended for Llama
+    
+    # Prepare model for k-bit training (enables gradient checkpointing, input require grads, etc.)
+    model = prepare_model_for_kbit_training(model)
 
     print("--- 2. Preparing Dataset and Tokenization ---")
     
@@ -116,8 +120,10 @@ def run_qlora_finetuning():
         warmup_ratio=WARMUP_RATIO,
         lr_scheduler_type="cosine",
         optim="paged_adamw_8bit", # Optimized AdamW for QLoRA
+        eval_strategy="steps",
         eval_steps=SAVE_STEPS if not TEST_MODE else 1, # Evaluate as often as we save (or every step in test)
         load_best_model_at_end=True if not TEST_MODE else False,
+        gradient_checkpointing=True,
     )
 
     # Data Collator (standard language modeling collator for next-token prediction)
@@ -135,14 +141,14 @@ def run_qlora_finetuning():
         train_dataset=tokenized_train_dataset,
         eval_dataset=tokenized_validation_dataset,
         data_collator=data_collator,
-        callbacks=[EvaluationCallback(tokenized_validation_dataset, tokenizer, num_samples=10 if TEST_MODE else 50)]
+        callbacks=[EvaluationCallback(tokenized_validation_dataset, tokenizer, num_samples=5 if TEST_MODE else 20)]
     )
 
     trainer.train()
 
     # 8. Save the final PEFT adapter weights
-    trainer.model.save_pretrained(os.path.join(OUTPUT_DIR, "v1"))
-    tokenizer.save_pretrained(os.path.join(OUTPUT_DIR, "v1"))
+    trainer.model.save_pretrained(os.path.join(OUTPUT_DIR, "config1"))
+    tokenizer.save_pretrained(os.path.join(OUTPUT_DIR, "config1"))
     print("\nTraining complete. PEFT adapter saved.")
 
 
