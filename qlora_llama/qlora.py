@@ -16,7 +16,7 @@ from datasets import load_dataset, Dataset
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from data import load_and_format
-from config.config1 import *
+from config.config2 import *
 from metrics import EvaluationCallback
 
 # --- Main Execution ---
@@ -65,8 +65,8 @@ def run_qlora_finetuning():
     print("--- 2. Preparing Dataset and Tokenization ---")
     
     # Create / Load Dataset (Using mock data here)
-    train_dataset = load_and_format(filepath="./processed_data/train.jsonl", n=5 if TEST_MODE else None)
-    validation_dataset = load_and_format(filepath="./processed_data/validation.jsonl", n=5 if TEST_MODE else None)
+    train_dataset = load_and_format(filepath="./processed_data/train.jsonl", n=100 if TEST_MODE else None)
+    validation_dataset = load_and_format(filepath="./processed_data/validation.jsonl", n=20 if TEST_MODE else None)
 
     def tokenize_function(examples):
         return tokenizer(examples["text"], truncation=True, max_length=MAX_SEQ_LENGTH)
@@ -124,6 +124,7 @@ def run_qlora_finetuning():
         eval_steps=SAVE_STEPS if not TEST_MODE else 1, # Evaluate as often as we save (or every step in test)
         load_best_model_at_end=True if not TEST_MODE else False,
         gradient_checkpointing=True,
+        neftune_noise_alpha=5,
     )
 
     # Data Collator (standard language modeling collator for next-token prediction)
@@ -144,11 +145,19 @@ def run_qlora_finetuning():
         callbacks=[EvaluationCallback(validation_dataset, tokenizer, num_samples=5 if TEST_MODE else 20)]
     )
 
-    trainer.train()
+    # Check if we can resume from a checkpoint
+    checkpoint = None
+    if os.path.isdir(OUTPUT_DIR):
+        checkpoints = [d for d in os.listdir(OUTPUT_DIR) if d.startswith("checkpoint-")]
+        if checkpoints:
+            checkpoint = True
+            print(f"Resuming from checkpoint: {checkpoints}")
+    
+    trainer.train(resume_from_checkpoint=checkpoint)
 
     # 8. Save the final PEFT adapter weights
-    trainer.model.save_pretrained(os.path.join(OUTPUT_DIR, "config1"))
-    tokenizer.save_pretrained(os.path.join(OUTPUT_DIR, "config1"))
+    trainer.model.save_pretrained(os.path.join(OUTPUT_DIR, "config2"))
+    tokenizer.save_pretrained(os.path.join(OUTPUT_DIR, "config2"))
     print("\nTraining complete. PEFT adapter saved.")
 
 

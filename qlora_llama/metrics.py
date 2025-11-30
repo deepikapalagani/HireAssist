@@ -75,11 +75,11 @@ class EvaluationCallback(TrainerCallback):
             
             # Get Ground Truth Decision
             gt_lines = ground_truth.strip().split('\n')
-            gt_decision = gt_lines[-1].strip().upper() if gt_lines else ""
+            gt_decision = gt_lines[0].strip().upper() if gt_lines else ""
             
             # Get Predicted Decision
             pred_lines = generated_text.strip().split('\n')
-            pred_decision = pred_lines[-1].strip().upper() if pred_lines else ""
+            pred_decision = pred_lines[0].strip().upper() if pred_lines else ""
             
             # Check if the decision matches
             # We check if the predicted decision line contains the ground truth decision (e.g. "[SELECT]" vs "SELECT")
