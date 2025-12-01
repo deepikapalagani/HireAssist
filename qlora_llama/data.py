@@ -13,14 +13,14 @@ def load_and_format(filepath, n = None):
 
     # Define templates for input and output
     input_template = lambda row: (
-        f"You are a Senior Recruiter. Evaluate the candidate below based on the following job requirements. "
-        f"Output a single classification ('SELECT' or 'REJECT') followed by a detailed reason for the decision.\n\n"
+        f"You are an HR recruiter. Analyze the job description and evaluate if the provided resume is a good fit. "
+        f"Provide a final decision of either [select] or [reject], followed by exactly one sentence of reasoning.\n\n"
         f"--- JOB ROLE ---\n{row['Role']}\n\n"
         f"--- JOB DESCRIPTION ---\n{row['Job_Description']}\n\n"
         f"--- CANDIDATE RESUME ---\n{row['Resume']}\n"
     )
 
-    output_template = lambda row:f"{row['Decision']}: {row['Reason_for_decision']}"
+    output_template = lambda row:f"{row['Decision']}\n{row['Reason_for_decision']}"
 
     final_template = lambda input, output: (
         f"{BOS_TOKEN}<|start_header_id|>user<|end_header_id|>\n"

@@ -9,14 +9,15 @@ from transformers import (
     Trainer,
     DataCollatorForLanguageModeling
 )
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from datasets import load_dataset, Dataset
 
 # To import data and config
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from data import load_and_format
-from config import *
+from config.config2 import *
+from metrics import EvaluationCallback
 
 # --- Main Execution ---
 
@@ -25,7 +26,7 @@ def run_qlora_finetuning():
     print(f"--- 1. Loading Model and Tokenizer: {MODEL_NAME} ---")
 
     # Load Tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_auth_token=True)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_auth_token=True, add_bos_token=False)
     
     # Crucially, add a padding token if the tokenizer doesn't have one (Llama 3 doesn't by default)
     # The default Llama 3 tokenizer only has BOS and EOS (eot_id).
@@ -48,28 +49,42 @@ def run_qlora_finetuning():
         device_map="auto", # Automatically distributes the model across available GPUs
         torch_dtype=torch.bfloat16 if BF16 else torch.float16,
         use_auth_token=True,
+        attn_implementation="flash_attention_2" if USE_FLASH_ATTENTION else "eager",
     )
-    
+    print(f"Using attention implementation: {USE_FLASH_ATTENTION}")
     # 3. Resize embeddings if PAD token was added
     model.resize_token_embeddings(len(tokenizer))
     
     # 4. Freeze all parameters (4-bit weights are already non-trainable)
     model.config.use_cache = False # Required for gradient checkpointing
     model.config.pretraining_tp = 1 # Recommended for Llama
+    
+    # Prepare model for k-bit training (enables gradient checkpointing, input require grads, etc.)
+    model = prepare_model_for_kbit_training(model)
 
     print("--- 2. Preparing Dataset and Tokenization ---")
     
     # Create / Load Dataset (Using mock data here)
-    raw_dataset = load_and_format(filepath="./processed_data/train.jsonl", n=5 if TEST_MODE else None)
+    train_dataset = load_and_format(filepath="./processed_data/train.jsonl", n=100 if TEST_MODE else None)
+    validation_dataset = load_and_format(filepath="./processed_data/validation.jsonl", n=20 if TEST_MODE else None)
 
     def tokenize_function(examples):
         return tokenizer(examples["text"], truncation=True, max_length=MAX_SEQ_LENGTH)
 
-    tokenized_dataset = raw_dataset.map(
+    tokenized_train_dataset = train_dataset.map(
         tokenize_function, 
         batched=True, 
         remove_columns=["text"]
     )
+
+    tokenized_validation_dataset = validation_dataset.map(
+        tokenize_function, 
+        batched=True, 
+        remove_columns=["text"]
+    )
+    
+    print(f"Training samples: {len(train_dataset)}")
+    print(f"Evaluation samples: {len(validation_dataset)}")
 
     print("--- 3. Configuring QLoRA (PEFT) ---")
 
@@ -105,6 +120,11 @@ def run_qlora_finetuning():
         warmup_ratio=WARMUP_RATIO,
         lr_scheduler_type="cosine",
         optim="paged_adamw_8bit", # Optimized AdamW for QLoRA
+        eval_strategy="steps",
+        eval_steps=SAVE_STEPS if not TEST_MODE else 1, # Evaluate as often as we save (or every step in test)
+        load_best_model_at_end=True if not TEST_MODE else False,
+        gradient_checkpointing=True,
+        neftune_noise_alpha=5,
     )
 
     # Data Collator (standard language modeling collator for next-token prediction)
@@ -119,15 +139,25 @@ def run_qlora_finetuning():
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=tokenized_dataset,
+        train_dataset=tokenized_train_dataset,
+        eval_dataset=tokenized_validation_dataset,
         data_collator=data_collator,
+        callbacks=[EvaluationCallback(validation_dataset, tokenizer, num_samples=5 if TEST_MODE else 20)]
     )
 
-    trainer.train()
+    # Check if we can resume from a checkpoint
+    checkpoint = None
+    if os.path.isdir(OUTPUT_DIR):
+        checkpoints = [d for d in os.listdir(OUTPUT_DIR) if d.startswith("checkpoint-")]
+        if checkpoints:
+            checkpoint = True
+            print(f"Resuming from checkpoint: {checkpoints}")
+    
+    trainer.train(resume_from_checkpoint=checkpoint)
 
     # 8. Save the final PEFT adapter weights
-    trainer.model.save_pretrained(os.path.join(OUTPUT_DIR, "final_adapter"))
-    tokenizer.save_pretrained(os.path.join(OUTPUT_DIR, "final_adapter"))
+    trainer.model.save_pretrained(os.path.join(OUTPUT_DIR, "config2"))
+    tokenizer.save_pretrained(os.path.join(OUTPUT_DIR, "config2"))
     print("\nTraining complete. PEFT adapter saved.")
 
 

@@ -5,6 +5,7 @@
 - `preprocess_data.py`: Script to load, clean (PII removal), and split the dataset.
 
 ## Setup
+- For AWS EC2 instance setup, refer to this: https://docs.google.com/presentation/d/1Tw_klO84R9G7CZ3cINAKgy4BfdNm-8dlnRXSBIVD_3A/edit?slide=id.g28302656ccb_0_10#slide=id.g28302656ccb_0_10
 
 1.  **Install Dependencies**:
     ```bash
