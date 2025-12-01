@@ -12,3 +12,4 @@ numpy
 bitsandbytes
 evaluate
 bert_score
+sentence-transformers

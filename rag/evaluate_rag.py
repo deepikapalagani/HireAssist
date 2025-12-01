@@ -9,6 +9,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import rag_inference
 import re
+from tqdm import tqdm
 
 # Configuration
 TEST_DATA_PATH = "processed_data/test.jsonl"
@@ -58,7 +59,7 @@ def main():
     
     print(f"\nStarting evaluation on {len(val_data)} examples...")
     
-    for i, item in enumerate(val_data):
+    for i, item in enumerate(tqdm(val_data)):
         print(f"\nProcessing example {i+1}/{len(val_data)}")
         role = item['Role']
         resume = item['Resume']
