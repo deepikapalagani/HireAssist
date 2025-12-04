@@ -12,3 +12,4 @@ numpy
 bert_score
 protobuf
 sentencepiece
+bitsandbytes
