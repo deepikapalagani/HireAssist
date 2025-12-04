@@ -9,4 +9,7 @@ torch
 nltk
 regex
 numpy
+bert_score
+protobuf
+sentencepiece
 bitsandbytes
