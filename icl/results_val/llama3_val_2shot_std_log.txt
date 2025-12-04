@@ -1,0 +1,22 @@
+Intermediate Metrics for meta-llama/Meta-Llama-3-8B-Instruct (two_shot_standard)
+================================================
+Sample 56: Accuracy=0.5714, BERTScore=0.8626
+Sample 104: Accuracy=0.5769, BERTScore=0.8659
+Sample 152: Accuracy=0.5132, BERTScore=0.8646
+Sample 200: Accuracy=0.5400, BERTScore=0.8654
+Sample 256: Accuracy=0.5547, BERTScore=0.8645
+Sample 304: Accuracy=0.5493, BERTScore=0.8643
+Sample 352: Accuracy=0.5426, BERTScore=0.8645
+Sample 400: Accuracy=0.5425, BERTScore=0.8644
+Sample 456: Accuracy=0.5329, BERTScore=0.8645
+Sample 504: Accuracy=0.5337, BERTScore=0.8646
+Sample 552: Accuracy=0.5326, BERTScore=0.8650
+Sample 600: Accuracy=0.5283, BERTScore=0.8653
+Sample 656: Accuracy=0.5259, BERTScore=0.8650
+Sample 704: Accuracy=0.5270, BERTScore=0.8651
+Sample 752: Accuracy=0.5332, BERTScore=0.8651
+Sample 800: Accuracy=0.5288, BERTScore=0.8651
+Sample 856: Accuracy=0.5269, BERTScore=0.8649
+Sample 904: Accuracy=0.5299, BERTScore=0.8649
+Sample 952: Accuracy=0.5326, BERTScore=0.8648
+Sample 1000: Accuracy=0.5260, BERTScore=0.8646

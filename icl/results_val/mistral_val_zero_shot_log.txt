@@ -1,0 +1,22 @@
+Intermediate Metrics for mistralai/Mistral-7B-Instruct-v0.3 (zero_shot)
+================================================
+Sample 56: Accuracy=0.6071, BERTScore=0.8493
+Sample 104: Accuracy=0.6058, BERTScore=0.8514
+Sample 152: Accuracy=0.5395, BERTScore=0.8514
+Sample 200: Accuracy=0.5300, BERTScore=0.8512
+Sample 256: Accuracy=0.5391, BERTScore=0.8505
+Sample 304: Accuracy=0.5395, BERTScore=0.8502
+Sample 352: Accuracy=0.5256, BERTScore=0.8502
+Sample 400: Accuracy=0.5200, BERTScore=0.8506
+Sample 456: Accuracy=0.5110, BERTScore=0.8506
+Sample 504: Accuracy=0.5099, BERTScore=0.8507
+Sample 552: Accuracy=0.5072, BERTScore=0.8507
+Sample 600: Accuracy=0.5033, BERTScore=0.8508
+Sample 656: Accuracy=0.5061, BERTScore=0.8504
+Sample 704: Accuracy=0.5085, BERTScore=0.8503
+Sample 752: Accuracy=0.5173, BERTScore=0.8505
+Sample 800: Accuracy=0.5150, BERTScore=0.8507
+Sample 856: Accuracy=0.5140, BERTScore=0.8507
+Sample 904: Accuracy=0.5144, BERTScore=0.8506
+Sample 952: Accuracy=0.5158, BERTScore=0.8506
+Sample 1000: Accuracy=0.5080, BERTScore=0.8505

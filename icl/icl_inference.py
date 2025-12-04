@@ -228,13 +228,20 @@ def main():
         # Tokenize batch
         inputs = tokenizer(batch_prompts, return_tensors="pt", padding=True, truncation=True).to(model.device)
         
+        # Define terminators for Llama-3
+        terminators = [
+            tokenizer.eos_token_id,
+            tokenizer.convert_tokens_to_ids("<|eot_id|>")
+        ]
+
         with torch.no_grad():
             outputs = model.generate(
                 **inputs, 
                 max_new_tokens=256, 
                 temperature=0.1,
                 do_sample=True,
-                pad_token_id=tokenizer.pad_token_id
+                pad_token_id=tokenizer.pad_token_id,
+                eos_token_id=terminators
             )
         
         # Decode and process results
@@ -297,6 +304,9 @@ def main():
     print(f"\nAccuracy: {accuracy:.4f}")
     print("\nClassification Report:")
     print(classification_report(true_labels, pred_labels, zero_division=0))
+    
+    # Get dictionary for saving
+    class_report = classification_report(true_labels, pred_labels, zero_division=0, output_dict=True)
 
     # BERTScore
     print("\nCalculating BERTScore...")
@@ -317,7 +327,8 @@ def main():
         },
         "metrics": {
             "accuracy": accuracy,
-            "bertscore_f1": bertscore_f1
+            "bertscore_f1": bertscore_f1,
+            "classification_report": class_report
         },
         "predictions": results
     }

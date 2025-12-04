@@ -1,0 +1,22 @@
+Intermediate Metrics for meta-llama/Meta-Llama-3-8B-Instruct (zero_shot)
+================================================
+Sample 56: Accuracy=0.6250, BERTScore=0.8478
+Sample 104: Accuracy=0.5769, BERTScore=0.8494
+Sample 152: Accuracy=0.5592, BERTScore=0.8490
+Sample 200: Accuracy=0.5850, BERTScore=0.8493
+Sample 256: Accuracy=0.5703, BERTScore=0.8487
+Sample 304: Accuracy=0.5789, BERTScore=0.8489
+Sample 352: Accuracy=0.5568, BERTScore=0.8491
+Sample 400: Accuracy=0.5575, BERTScore=0.8493
+Sample 456: Accuracy=0.5504, BERTScore=0.8493
+Sample 504: Accuracy=0.5377, BERTScore=0.8492
+Sample 552: Accuracy=0.5290, BERTScore=0.8493
+Sample 600: Accuracy=0.5250, BERTScore=0.8496
+Sample 656: Accuracy=0.5229, BERTScore=0.8496
+Sample 704: Accuracy=0.5327, BERTScore=0.8496
+Sample 752: Accuracy=0.5372, BERTScore=0.8499
+Sample 800: Accuracy=0.5337, BERTScore=0.8498
+Sample 856: Accuracy=0.5304, BERTScore=0.8497
+Sample 904: Accuracy=0.5343, BERTScore=0.8499
+Sample 952: Accuracy=0.5336, BERTScore=0.8498
+Sample 1000: Accuracy=0.5360, BERTScore=0.8500

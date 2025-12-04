@@ -1,0 +1,71 @@
+\subsection{Results for In-Context Learning}
+
+We evaluated two distinct in-context learning (ICL) strategies on the HireAssist resume screening task: \textbf{Llama-3-8B with zero-shot prompting} and \textbf{Mistral-7B with two-shot chain-of-thought (CoT) prompting}. The test set contained 1,018 samples with a balanced distribution of 512 ``Reject'' and 506 ``Select'' labels.
+
+\subsubsection{Overall Performance Comparison}
+
+Table~\ref{tab:icl_overall} presents the overall performance metrics for both in-context learning approaches.
+
+\begin{table}[h]
+\centering
+\caption{Overall Performance Comparison of ICL Strategies}
+\label{tab:icl_overall}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model \& Strategy} & \textbf{Accuracy} & \textbf{BERTScore F1} & \textbf{Macro F1} \\
+\midrule
+Llama-3 Zero-Shot & 54.03\% & 0.8500 & 0.4737 \\
+Mistral Two-Shot CoT & 53.44\% & 0.8709 & 0.5157 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both approaches achieved similar overall accuracy ($\sim$54\%), performing only slightly better than random chance on this binary classification task. However, the Mistral two-shot CoT approach demonstrated superior performance in reasoning quality, as evidenced by its higher BERTScore F1 (0.8709 vs. 0.8500) and macro F1 score (0.5157 vs. 0.4737).
+
+\subsubsection{Class-Specific Performance}
+
+Table~\ref{tab:icl_class_specific} shows the detailed performance breakdown for each class across both strategies.
+
+\begin{table}[h]
+\centering
+\caption{Class-Specific Performance Comparison}
+\label{tab:icl_class_specific}
+\begin{tabular}{llccc}
+\toprule
+\textbf{Class} & \textbf{Model \& Strategy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+\midrule
+\multirow{2}{*}{Reject} & Llama-3 Zero-Shot & 0.653 & 0.184 & 0.287 \\
+                        & Mistral Two-Shot CoT & 0.562 & 0.336 & 0.421 \\
+\midrule
+\multirow{2}{*}{Select} & Llama-3 Zero-Shot & 0.522 & 0.901 & 0.661 \\
+                        & Mistral Two-Shot CoT & 0.522 & 0.735 & 0.611 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Reject Class Performance:} The Mistral two-shot CoT approach achieved significantly better recall for the ``Reject'' class (33.6\% vs. 18.4\%), resulting in a substantially higher F1-score (0.421 vs. 0.287). This indicates that providing explicit reasoning examples helped the model better identify candidates who should be rejected.
+
+\textbf{Select Class Performance:} Both models showed a strong bias toward predicting ``Select,'' with Llama-3 zero-shot exhibiting an extreme bias (90.1\% recall). The Mistral two-shot CoT approach demonstrated more balanced predictions with a recall of 73.5\%, though this came at the cost of slightly lower F1-score for the ``Select'' class.
+
+\subsubsection{Key Findings}
+
+\begin{enumerate}
+    \item \textbf{Reasoning Quality}: The Mistral two-shot CoT approach produced higher-quality reasoning, as measured by BERTScore F1 (0.8709 vs. 0.8500). The chain-of-thought examples guided the model to generate more coherent and contextually appropriate explanations.
+    
+    \item \textbf{Class Balance}: Llama-3 zero-shot showed severe class imbalance, correctly identifying only 18.4\% of rejection cases while over-predicting ``Select'' decisions. The two-shot CoT prompting strategy significantly improved this balance, nearly doubling the recall for ``Reject'' cases.
+    
+    \item \textbf{Overall Effectiveness}: While the Mistral two-shot CoT approach achieved marginally lower overall accuracy (53.44\% vs. 54.03\%), it demonstrated better balanced performance across both classes, as evidenced by its higher macro F1 score (0.5157 vs. 0.4737).
+\end{enumerate}
+
+\subsubsection{Conclusion}
+
+The \textbf{Mistral two-shot chain-of-thought prompting strategy worked best overall} for this resume screening task. Although it achieved slightly lower raw accuracy, it provided:
+
+\begin{itemize}
+    \item More balanced predictions across both classes
+    \item Higher quality reasoning (BERTScore F1)
+    \item Better macro F1 performance
+    \item Significantly improved recall for the minority ``Reject'' class
+\end{itemize}
+
+The chain-of-thought examples appear to have guided the model toward more thoughtful evaluation, reducing the tendency to over-predict positive outcomes and improving the quality of generated reasoning. This suggests that for complex decision-making tasks like resume screening, providing explicit reasoning examples is more effective than relying on zero-shot capabilities alone.

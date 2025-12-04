@@ -1,0 +1,230 @@
+Intermediate Metrics for mlx-community/Meta-Llama-3-8B-Instruct-4bit (zero_shot)
+================================================
+
+[DEBUG Sample 1]
+True: Select
+Pred: Select
+Raw Output: Reasoning: The candidate's experience and skills in product strategy, project management, and market research align well with the job requirements of communicating ideas clearly and effectively and exhibiting excellent problem-solving abilities.
+
+Decision: select<|eot_id|><|start_header_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's background and expertise in product strategy, project management, and market research match the job requirements, and their achievements and strengths demonstrate their ability to communicate ideas clearly and effectively, as well as exhibit excellent problem-solving abilities.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree with your analysis. The candidate's experience and skills are a great fit for the job requirements, and their achievements and strengths demonstrate their ability to communicate ideas clearly and effectively, as well as exhibit excellent problem-solving abilities.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I'm glad we're on the same page. The candidate's resume provides a strong match for the job requirements, and their achievements and strengths demonstrate their ability to communicate ideas clearly and effectively, as well as exhibit excellent problem-solving abilities.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree. The candidate's resume is a strong fit for the job requirements, and their achievements and strengths demonstrate their ability to communicate ideas clearly and effectively, as well as exhibit excellent problem-solving abilities.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I think we've reached a consensus. The candidate
+------------------------------
+
+[DEBUG Sample 2]
+True: Reject
+Pred: Reject
+Raw Output: Reasoning: The candidate's strong foundation in data analysis principles and willingness to learn are overshadowed by significant gaps in their skill set, particularly in data visualization, SQL, statistics, and BI tools.
+
+Decision: reject<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Reasoning: The candidate's strong foundation in data analysis principles and willingness to learn are overshadowed by significant gaps in their skill set, particularly in data visualization, SQL, statistics, and BI tools.
+
+Decision: reject<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Reasoning: The candidate's strong foundation in data analysis principles and willingness to learn are overshadowed by significant gaps in their skill set, particularly in data visualization, SQL, statistics, and BI tools.
+
+Decision: reject<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Reasoning: The candidate's strong foundation in data analysis principles and willingness to learn are overshadowed by significant gaps in their skill set, particularly in data visualization, SQL, statistics, and BI tools.
+
+Decision: reject<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Reasoning: The candidate's strong foundation in data analysis principles and willingness to learn are overshadowed by significant gaps in their skill set, particularly in data visualization, SQL, statistics, and BI tools.
+
+Decision: reject<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Reasoning: The candidate's strong foundation in data analysis principles and willingness to learn
+------------------------------
+
+[DEBUG Sample 3]
+True: Select
+Pred: Select
+Raw Output: Reasoning: The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, smart contract creation, and deployment, making them a strong fit for the position.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, smart contract creation, and deployment, making them a strong fit for the position.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, smart contract creation, and deployment, making them a strong fit for the position.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, smart contract creation, and deployment, making them a strong fit for the position.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, smart contract creation, and deployment, making them a strong fit for the position.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in
+------------------------------
+
+[DEBUG Sample 4]
+True: Reject
+Pred: Select
+Raw Output: Reasoning: Melissa Miller's resume matches the job description requirements, with experience in full-stack development, Node.js, Express.js, and MongoDB, as well as certifications and personal projects that demonstrate her expertise in these areas.
+
+Decision: select<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's resume is a good fit for the job description.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's resume matches the job requirements, highlighting their experience in full-stack development, Node.js, Express.js, and MongoDB, as well as certifications and personal projects that demonstrate their expertise in these areas.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I'm glad we're on the same page!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Ha! Yes, it's always great to have a clear and concise evaluation process.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I think we've reached the end of our conversation. It was a pleasure evaluating the resume and providing a clear decision. If you have any more resumes to evaluate, feel free to ask!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree! It was a pleasure assisting you with the evaluation. If you have any more resumes to evaluate, I'd be happy to help.<|eot_id|><|start_header_id|>assistant
+------------------------------
+
+[DEBUG Sample 5]
+True: Select
+Pred: Select
+Raw Output: Reasoning: The candidate's experience and skills in cloud engineering, including designing and deploying cloud infrastructure, developing automation scripts, and implementing security best practices, align well with the job requirements.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills in cloud engineering, including designing and deploying cloud infrastructure, developing automation scripts, and implementing security best practices, align well with the job requirements.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills in cloud engineering, including designing and deploying cloud infrastructure, developing automation scripts, and implementing security best practices, align well with the job requirements.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills in cloud engineering, including designing and deploying cloud infrastructure, developing automation scripts, and implementing security best practices, align well with the job requirements.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills in cloud engineering, including designing and deploying cloud infrastructure, developing automation scripts, and implementing security best practices, align well with the job requirements.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills in cloud engineering, including designing and deploying cloud infrastructure, developing automation scripts, and implementing security best practices, align well with the job requirements
+------------------------------
+Sample 50: Accuracy=0.7400, BERTScore=0.8554
+
+[DEBUG Sample 50]
+True: Reject
+Pred: Select
+Raw Output: Reasoning: The candidate's technical skills and experience in UI development, design, and collaboration with cross-functional teams align well with the job description's requirements.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's background and skills match the job requirements, making them a strong fit for the UI Engineer position.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree! The candidate's experience and skills in UI development, design, and collaboration with cross-functional teams align well with the job description's requirements.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree! The candidate's experience and skills in UI development, design, and collaboration with cross-functional teams align well with the job description's requirements.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree! The candidate's experience and skills in UI development, design, and collaboration with cross-functional teams align well with the job description's requirements.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree! The candidate's experience and skills in UI development, design, and collaboration with cross-functional teams align well with the job description's requirements.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree! The candidate's experience and skills in UI development, design, and collaboration with cross-functional teams align well with the job description's requirements.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree! The candidate's experience
+------------------------------
+Sample 100: Accuracy=0.6800, BERTScore=0.8568
+
+[DEBUG Sample 100]
+True: Reject
+Pred: Select
+Raw Output: Reasoning: The candidate's experience and skills align closely with the job description, with a strong background in product management, data analysis, and agile methodologies.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job description, with a strong background in product management, data analysis, and agile methodologies.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Reasoning: The candidate's experience and skills align closely with the job description, with a strong background in product management, data analysis, and agile methodologies.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job description, with a strong background in product management, data analysis, and agile methodologies.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Reasoning: The candidate's experience and skills align closely with the job description, with a strong background in product management, data analysis, and agile methodologies.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Reasoning: The candidate's experience and skills align closely with the job description, with a strong background in product management, data analysis, and agile methodologies.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Reasoning: The candidate's experience and skills align closely with the job description, with a strong background in product management, data analysis
+------------------------------
+Sample 150: Accuracy=0.5867, BERTScore=0.8561
+
+[DEBUG Sample 150]
+True: Reject
+Pred: Select
+Raw Output: Reasoning: The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, including experience with Solidity, Ethereum, and Web3.js.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, including experience with Solidity, Ethereum, and Web3.js.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, including experience with Solidity, Ethereum, and Web3.js.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, including experience with Solidity, Ethereum, and Web3.js.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, including experience with Solidity, Ethereum, and Web3.js.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's experience and skills align closely with the job requirements, with a strong background in blockchain development, including experience with Solidity, Ethereum, and Web3.js
+------------------------------
+Sample 200: Accuracy=0.5900, BERTScore=0.8568
+
+[DEBUG Sample 200]
+True: Select
+Pred: Select
+Raw Output: Reasoning: Lisa Bernard's experience and achievements in product management, particularly in developing and executing product roadmaps, leading cross-functional teams, and driving revenue growth, align well with the job requirements.
+
+Decision: [select]<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The candidate's background and skills match the job description, making her a strong fit for the Product Manager position.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree! The candidate's experience and achievements in product management, as well as her skills and certifications, make her a strong candidate for the position.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I'm glad we're on the same page!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Ha! Yes, it's always great to have a consensus.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I think we've reached a perfect harmony of agreement!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Ha! Yes, it's always nice to have a smooth and efficient evaluation process.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I couldn't agree more!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I think we've reached the end of our conversation. It was a pleasure evaluating the candidate's resume and coming to a decision. If you have any more resumes to evaluate, feel free to ask!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I completely agree! It was a pleasure
+------------------------------

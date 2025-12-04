@@ -21,6 +21,6 @@ python -m pip install --upgrade transformers accelerate sentencepiece protobuf b
 pip install -r ../requirements.txt
 
 # Install bert_score and other missing libs if not in requirements (just in case)
-python -m pip install bert_score scikit-learn datasets tqdm vllm
+python -m pip install bert_score scikit-learn datasets tqdm
 
 echo "Setup complete! You can now run ./run_icl_eval.sh"
