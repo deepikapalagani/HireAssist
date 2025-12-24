@@ -48,6 +48,7 @@ def run_qlora_finetuning():
         device_map="auto", # Automatically distributes the model across available GPUs
         torch_dtype=torch.bfloat16 if BF16 else torch.float16,
         use_auth_token=True,
+        attn_implementation="flash_attention_2"
     )
     
     # 3. Resize embeddings if PAD token was added
@@ -60,7 +61,7 @@ def run_qlora_finetuning():
     print("--- 2. Preparing Dataset and Tokenization ---")
     
     # Create / Load Dataset (Using mock data here)
-    raw_dataset = load_and_format(filepath="./processed_data/train.jsonl", n=5 if TEST_MODE else None)
+    raw_dataset = load_and_format(filepath="./processed_data/train.jsonl", model_family=MODEL_FAMILY, n=5 if TEST_MODE else None)
 
     def tokenize_function(examples):
         return tokenizer(examples["text"], truncation=True, max_length=MAX_SEQ_LENGTH)
@@ -105,6 +106,7 @@ def run_qlora_finetuning():
         warmup_ratio=WARMUP_RATIO,
         lr_scheduler_type="cosine",
         optim="paged_adamw_8bit", # Optimized AdamW for QLoRA
+        gradient_checkpointing=True, # Essential for memory savings
     )
 
     # Data Collator (standard language modeling collator for next-token prediction)

@@ -13,3 +13,4 @@ bert_score
 protobuf
 sentencepiece
 bitsandbytes
+flash-attn --no-build-isolation
